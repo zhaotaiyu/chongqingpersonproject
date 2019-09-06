@@ -101,3 +101,4 @@ PGSQL_PORT=54321
 MONGOCLIENT='mongodb://ecs-a025-0002:27017/'
 MONGODATABASE='chongqing'
 MONGOTABLE='chongqingperson'
+DRIVERPATH = r'F:\healdless\chromedriver_win32\chromedriver.exe'

@@ -17,12 +17,14 @@ from scrapy.http import HtmlResponse,TextResponse
 from selenium.common.exceptions import TimeoutException
 from lxml import etree
 import json
+from scrapy.conf import settings
+driver_path = settings.get("DRIVERPATH")
 deal_js = "document.getElementById('ad1').parentNode.removeChild(document.getElementById('ad1'))"
 class SeleniumMiddleware():
 	def __init__(self):
 		self.chrome_options = Options()
 		self.chrome_options.add_argument('--headless')
-		self.driver = webdriver.Chrome(chrome_options=self.chrome_options,executable_path  = r'F:\healdless\chromedriver_win32\chromedriver.exe')
+		self.driver = webdriver.Chrome(chrome_options=self.chrome_options,executable_path  = driver_path)
 		self.wait = WebDriverWait(self.driver,20)
 	def process_request(self,request,spider):
 		if request.meta.get("mark") in ["zczjs","zljcry","zzaqry","qyaqfzr","xmaqfzr"]:
