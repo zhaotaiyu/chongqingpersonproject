@@ -89,7 +89,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-LOG_LEVEL= 'ERROR'
+LOG_LEVEL= 'DEBUG'
 #PGSQL
 PGSQL_URI="ecs-a025-0002"
 PGSQL_DATABASE="chongqing"
@@ -101,4 +101,3 @@ PGSQL_PORT=54321
 MONGOCLIENT='mongodb://ecs-a025-0002:27017/'
 MONGODATABASE='chongqing'
 MONGOTABLE='chongqingperson'
-DRIVERPATH = '/root/chromedriver/chromedriver'
