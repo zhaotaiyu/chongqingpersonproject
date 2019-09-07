@@ -26,8 +26,8 @@ class ChongqingpersonSpider(scrapy.Spider):
 		if total_page is None:
 			total_page = response.xpath("//span[@id='Pager1_Pages']/text()").extract_first()
 		print(total_page)
-		# for num in range(1,int(total_page)+1):
-		for num in range(8,12):
+		for num in range(1,int(total_page)+1):
+		#for num in range(1,12):
 			if response.url =="http://183.66.171.75:88/CQCollect/Ry_Query/zcjzs/Wright_List.aspx":
 				yield Request(response.url,callback=self.parse_zcjzs,meta={"num":num,"mark":"zcjzs","line":1,"page":"Pager1_NewPage","go":"Pager1_BT_Go"},dont_filter=True)
 			if response.url =="http://183.66.171.75:88/CQCollect/Ry_Query/zczjs/zczjs_List.aspx":
