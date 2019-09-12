@@ -8,15 +8,15 @@ from chongqingpersonproject.items import *
 import datetime
 import pymongo
 import psycopg2
-from scrapy.conf import settings
+from .settings import *
 
-mongoclient=settings.get("MONGOCLIENT")
-mongodatabase=settings.get("MONGODATABASE")
-mongotable=settings.get("MONGOTABLE")
+mongoclient = MONGOCLIENT
+mongodatabase = MONGODATABASE
+mongotable = MONGOTABLE
 class ChongqingpersonprojectPipeline(object):
 	def process_item(self, item, spider):
 		for key, value in item.items():
-			if value == None or value == "\xa0" or value == "\\":
+			if value is None or value == "\xa0" or value == "\\":
 				item[key] = "None"
 			if item.get("mark") == "zljcry":
 				try:

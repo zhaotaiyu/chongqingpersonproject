@@ -27,7 +27,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0.5
+#DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -53,7 +53,7 @@ DOWNLOAD_DELAY = 0.5
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   'chongqingpersonproject.middlewares.SeleniumMiddleware': 543,
+   # 'chongqingpersonproject.middlewares.SeleniumMiddleware': 543,
 }
 
 # Enable or disable extensions
@@ -101,4 +101,5 @@ PGSQL_PORT=54321
 MONGOCLIENT='mongodb://ecs-a025-0002:27017/'
 MONGODATABASE='chongqing'
 MONGOTABLE='chongqingperson'
-DRIVERPATH='/root/chromedriver/chromedriver'
+#DRIVERPATH='/root/chromedriver/chromedriver'
+DRIVERPATH = r'F:\healdless\chromedriver_win32\chromedriver.exe'
