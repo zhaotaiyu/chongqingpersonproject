@@ -9,13 +9,19 @@ class ChongqingpersonSpider(scrapy.Spider):
     name = 'chongqingperson'
     #allowed_domains = ['183.66.171.75:88']
     #注册建造师(由于网站问题，暂不爬取）
-    start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/zcjzs/Wright_List.aspx']
+    #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/zcjzs/Wright_List.aspx']
+    # 注册造价师
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/zczjs/zczjs_List.aspx']
+    #质量检测人员
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/zljcry/zljcry_List.aspx']
+    # 重庆市监理员
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/jly/jly_List.aspx']
+    # 重庆市监理工程师
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/jlgcs/jlgcs_List.aspx']
+    # 注册监理工程师
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/qgzcjlgcs/qgzcjlgcs_List.aspx']
-    #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/zzaqry/zzaqry_List.aspx']
+    # 专职安全人员(已完成）
+    start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/zzaqry/zzaqry_List.aspx']
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/xmaqfzr/xmaqfzr_List.aspx']
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/qyaqfzr/qyaqfzr_List.aspx']
     #start_urls = ['http://183.66.171.75:88/CQCollect/Ry_Query/tzry/tzry_List.aspx']
@@ -25,32 +31,142 @@ class ChongqingpersonSpider(scrapy.Spider):
     def parse(self,response):
         __EVENTTARGET = 'Pager1:LB_Next'
         __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+        total_page = response.xpath("//span[@id='Pager1_Pages']/text()").extract_first()
+        now_page = response.xpath("//span[@id='Pager1_CPage']/text()").extract_first()
         # 注册建造师
         if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zcjzs/Wright_List.aspx":
-            total_page = response.xpath("//span[@id='Pager1_Pages']/text()").extract_first()
-            now_page = response.xpath("//span[@id='Pager1_CPage']/text()").extract_first()
+            mark = "zcjzs"
             tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-
             for tr in tr_list[1:]:
                 href = tr.xpath("./td[1]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
                 formdata = {
                     '__EVENTTARGET': href,
                     '__VIEWSTATE': __VIEWSTATE,
-                    'FManageDeptID': 'E56CC513-C25A-442F-AA5A-B28313838A62',
+                    'FManageDeptID': '-1',
                     'FLevel': '0',
                     'FIsWright': '-1'
                 }
-                yield FormRequest(response.url, formdata=formdata, callback=self.parse_middle, meta={"mark": "zcjzs"})
+                yield FormRequest(response.url, formdata=formdata, callback=self.parse_middle, meta={"mark": mark})
+        #注册造价师
+        if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zczjs/zczjs_List.aspx":
+            mark = "zczjs"
+            tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+            for tr in tr_list[1:]:
+                href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                formdata = {
+                    '__EVENTTARGET': href,
+                    '__VIEWSTATE': __VIEWSTATE,
+                    'FManageDeptID': '-1',
+                    'FLevel': '0',
+                    'FIsWright': '-1'
+                }
+                yield FormRequest(response.url, formdata=formdata, callback=self.parse_zczjs, meta={"mark": mark})
+        # 质量检测人员
+        if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zljcry/zljcry_List.aspx":
+            mark = "zljcry"
+            tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+            for tr in tr_list[1:]:
+                href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                formdata = {
+                    '__EVENTTARGET': href,
+                    '__VIEWSTATE': __VIEWSTATE,
+                    'FManageDeptID': '-1',
+                    'FLevel': '0',
+                    'FIsWright': '-1'
+                }
+                yield FormRequest(response.url, formdata=formdata, callback=self.parse_zljcry, meta={"mark": mark})
+        # 重庆市监理员
+        if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jly/jly_List.aspx":
+            __EVENTTARGET = 'TurnPage1:LB_Next'
+            __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+            total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+            now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+            tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+            for tr in tr_list[1:]:
+                p_info = PersonInformationItem()
+                p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
+                p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                p_info["is_delete"] = 0
+                p_info["mark"] = "cqsjly"
+                p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
+                p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
+                yield p_info
+        # 重庆市监理工程师
+        if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jlgcs/jlgcs_List.aspx":
+            __EVENTTARGET = 'TurnPage1:LB_Next'
+            __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+            total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+            now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+            tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+            for tr in tr_list[1:]:
+                p_info = PersonInformationItem()
+                p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
+                p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                p_info["is_delete"] = 0
+                p_info["mark"] = "cqsjlgcs"
+                p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
+                p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
+                yield p_info
+        # 注册监理工程师
+        if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/qgzcjlgcs/qgzcjlgcs_List.aspx":
+            __EVENTTARGET = 'TurnPage1:LB_Next'
+            __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+            total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+            now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+            tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+            for tr in tr_list[1:]:
+                p_info = PersonInformationItem()
+                p_info["name"] = tr.xpath("./td[2]/font/a/font/text()").extract_first()
+                p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                p_info["company_name"] = tr.xpath("./td[5]/font/text()").extract_first()
+                p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                p_info["is_delete"] = 0
+                p_info["mark"] = "zcjlgcs"
+                yield p_info
+        # 专职安全人员
+        if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zljcry/zljcry_List.aspx":
+            __EVENTTARGET = 'TurnPage1:LB_Next'
+            __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+            total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+            now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+            mark = "zzaqry"
+            tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+            for tr in tr_list[1:]:
+                href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                formdata = {
+                    '__EVENTTARGET': href,
+                    '__VIEWSTATE': __VIEWSTATE,
+                    'FManageDeptID': '-1',
+                    'FLevel': '0',
+                    'FIsWright': '-1'
+                }
+                yield FormRequest(response.url, formdata=formdata, callback=self.parse_zzaqry, meta={"mark": mark})
+
+        request = self.next_page(response,now_page,total_page,__VIEWSTATE,__EVENTTARGET)
+        yield request
+
+    # 下一页
+    def next_page(self,response,now_page,total_page,__VIEWSTATE,__EVENTTARGET):
         # if int(total_page) > int(now_page):
         if int(now_page) < 5:
             formdata_n = {
                 '__EVENTTARGET': __EVENTTARGET,
                 '__VIEWSTATE': __VIEWSTATE,
-                'FManageDeptID': 'E56CC513-C25A-442F-AA5A-B28313838A62',
+                'FManageDeptID': '-1',
                 'FLevel': '0',
                 'FIsWright': '-1'
             }
-            yield FormRequest(response.url, formdata=formdata_n, callback=self.parse)
+            return FormRequest(response.url, formdata=formdata_n, callback=self.parse)
 
     def parse_middle(self,response):
         mark = response.meta.get("mark")
@@ -87,209 +203,56 @@ class ChongqingpersonSpider(scrapy.Spider):
             p_info["credential_num"] = response.xpath("//span[@id='_FQNumber']/text()").extract_first()
             p_info["title_level"] = response.xpath("//table[@id='Table5']/tr[10]/td[4]/text()").extract_first().strip()
             yield p_info
-
     # 注册造价师
     def parse_zczjs(self,response):
-        #print(response.text)
-        data = json.loads(response.text)
-        html_list = data.get("data")
-        for html in html_list:
-            response = etree.HTML(html)
-            p_info = PersonInformationItem()
-            try:
-                p_info["name"] = response.xpath("//span[@id='FName']/text()")[0]
-            except:
-                p_info["name"] = None
-            try:
-                p_info["sex"] = response.xpath("//span[@id='FSex']/text()")[0]
-            except:
-                p_info["sex"] = None
-            try:
-                p_info["company_name"] = response.xpath("//span[@id='FBaseinfoName']/text()")[0]
-            except:
-                p_info["company_name"] = None
-            try:
-                p_info["reg_num"] = response.xpath("//span[@id='FQualiNumber']/text()")[0]
-            except:
-                p_info["reg_num"] = None
-            try:
-                p_info["nation"] = response.xpath("//span[@id='Fmz']/text()")[0]
-            except:
-                p_info["nation"] = None
-            try:
-                p_info["birthday"] = response.xpath("//span[@id='FBirthDay']/text()")[0]
-            except:
-                p_info["birthday"] = None
-            try:
-                p_info["title"] = response.xpath("//span[@id='FZc']/text()")[0]
-            except:
-                p_info["title"] = None
-            try:
-                p_info["year"] = response.xpath("//span[@id='Fgznx']/text()")[0]
-            except:
-                p_info["year"] = None
-            try:
-                p_info["major"] = response.xpath("//span[@id='Fsxzy']/text()")[0]
-            except:
-                p_info["major"] = None
-            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["is_delete"] = 0
-            p_info["mark"] = data.get("mark")
-            yield p_info
+        p_info = PersonInformationItem()
+        p_info["name"] = response.xpath("//span[@id='FName']/text()").extract_first()
+        p_info["sex"] = response.xpath("//span[@id='FSex']/text()").extract_first()
+        p_info["company_name"] = response.xpath("//span[@id='FBaseinfoName']/text()").extract_first()
+        p_info["reg_num"] = response.xpath("//span[@id='FQualiNumber']/text()").extract_first()
+        p_info["nation"] = response.xpath("//span[@id='Fmz']/text()").extract_first()
+        p_info["birthday"] = response.xpath("//span[@id='FBirthDay']/text()").extract_first()
+        p_info["title"] = response.xpath("//span[@id='FZc']/text()").extract_first()
+        p_info["year"] = response.xpath("//span[@id='Fgznx']/text()").extract_first()
+        p_info["major"] = response.xpath("//span[@id='Fsxzy']/text()").extract_first()
+        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        p_info["is_delete"] = 0
+        p_info["mark"] = response.meta.get("mark")
+        yield p_info
     # 质量检测人员
     def parse_zljcry(self,response):
-        #print(response.text)
-        data = json.loads(response.text)
-        html_list = data.get("data")
-        for html in html_list:
-            response = etree.HTML(html)
-            p_info = PersonInformationItem()
-            try:
-                p_info["name"] = response.xpath("//span[@id='FName']/text()")[0]
-            except:
-                p_info["name"] = None
-            try:
-                p_info["sex"] = response.xpath("//span[@id='FSex']/text()")[0]
-            except:
-                p_info["sex"] = None
-            try:
-                p_info["company_name"] = response.xpath("//span[@id='FBaseinfoName']/text()")[0]
-            except:
-                p_info["company_name"] = None
-            try:
-                p_info["title"] = response.xpath("//span[@id='FTitle']/text()")[0]
-            except:
-                p_info["title"] = None
-            try:
-                p_info["duty"] = response.xpath("//span[@id='FDuty']/text()")[0]
-            except:
-                p_info["duty"] = None
-            try:
-                p_info["worklicense_num"] = response.xpath("//span[@id='FUpCode']/text()")[0]
-            except:
-                p_info["worklicense_num"] = None
-            try:
-                p_info["in_date"] = response.xpath("//span[@id='FInDate']/text()")[0]
-            except:
-                p_info["in_date"] = None
-            try:
-                p_info["year"] = response.xpath("//span[@id='FYears']/text()")[0]
-            except:
-                p_info["year"] = None
-            try:
-                p_info["major"] = response.xpath("//span[@id='FSpecialty']/text()")[0]
-            except:
-                p_info["major"] = None
-            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["is_delete"] = 0
-            p_info["mark"] = data.get("mark")
-            yield p_info
-
-    # 重庆市监理员
-    def parse_cqsjly(self,response):
-        #print(response.text)
-        data = json.loads(response.text)
-        response = etree.HTML(data.get("data"))
-        tr_list = response.xpath("//table[@id='DataGrid1']/tbody/tr")
-        for tr in tr_list[1:]:
-            p_info = PersonInformationItem()
-            p_info["name"] = tr.xpath("./td[2]/font/text()")[0]
-            p_info["sex"] = tr.xpath("./td[3]/font/text()")[0]
-            p_info["company_name"] = tr.xpath("./td[7]/font/text()")[0]
-            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["is_delete"] = 0
-            p_info["mark"] = data.get("mark")
-            p_info["credential_num"] = tr.xpath("./td[4]/font/text()")[0]
-            p_info["major"] = tr.xpath("./td[5]/font/text()")[0]
-            p_info["major2"] = tr.xpath("./td[6]/font/text()")[0]
-            yield p_info
-    # 重庆市监理工程师
-    def parse_cqsjlgcs(self,response):
-        #print(response.text)
-        data = json.loads(response.text)
-        response = etree.HTML(data.get("data"))
-        tr_list = response.xpath("//table[@id='DataGrid1']/tbody/tr")
-        for tr in tr_list[1:]:
-            p_info = PersonInformationItem()
-            p_info["name"] = tr.xpath("./td[2]/font/text()")[0]
-            p_info["sex"] = tr.xpath("./td[3]/font/text()")[0]
-            p_info["company_name"] = tr.xpath("./td[7]/font/text()")[0]
-            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["is_delete"] = 0
-            p_info["mark"] = data.get("mark")
-            p_info["credential_num"] = tr.xpath("./td[4]/font/text()")[0]
-            p_info["major"] = tr.xpath("./td[5]/font/text()")[0]
-            p_info["major2"] = tr.xpath("./td[6]/font/text()")[0]
-            yield p_info
-    # 注册监理工程师
-    def parse_zcjlgcs(self,response):
-        #print(response.text)
-        data = json.loads(response.text)
-        response = etree.HTML(data.get("data"))
-        tr_list = response.xpath("//table[@id='DataGrid1']/tbody/tr")
-        for tr in tr_list[1:]:
-            p_info = PersonInformationItem()
-            p_info["name"] = tr.xpath("./td[2]/font/a/font/text()")[0]
-            p_info["sex"] = tr.xpath("./td[3]/font/text()")[0]
-            p_info["company_name"] = tr.xpath("./td[5]/font/text()")[0]
-            p_info["credential_num"] = tr.xpath("./td[4]/font/text()")[0]
-            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            p_info["is_delete"] = 0
-            p_info["mark"] = data.get("mark")
-            yield p_info
+        p_info = PersonInformationItem()
+        p_info["name"] = response.xpath("//span[@id='FName']/text()").extract_first()
+        p_info["sex"] = response.xpath("//span[@id='FSex']/text()").extract_first()
+        p_info["company_name"] = response.xpath("//span[@id='FBaseinfoName']/text()").extract_first()
+        p_info["title"] = response.xpath("//span[@id='FTitle']/text()").extract_first()
+        p_info["duty"] = response.xpath("//span[@id='FDuty']/text()").extract_first()
+        p_info["worklicense_num"] = response.xpath("//span[@id='FUpCode']/text()").extract_first()
+        p_info["in_date"] = response.xpath("//span[@id='FInDate']/text()").extract_first()
+        p_info["year"] = response.xpath("//span[@id='FYears']/text()").extract_first()
+        p_info["major"] = response.xpath("//span[@id='FSpecialty']/text()").extract_first()
+        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        p_info["is_delete"] = 0
+        p_info["mark"] = response.meta.get("mark")
+        yield p_info
     # 专职安全人员
     def parse_zzaqry(self,response):
-        #print(response.text)
-        data = json.loads(response.text)
-        html_list = data.get("data")
-        for html in html_list:
-            response = etree.HTML(html)
             p_info = PersonInformationItem()
-            try:
-                p_info["name"] = response.xpath("//span[@id='FName']/text()")[0]
-            except:
-                p_info["name"] = None
-            try:
-                p_info["sex"] = response.xpath("//span[@id='FSex']/text()")[0]
-            except:
-                p_info["sex"] = None
-            try:
-                p_info["company_name"] = response.xpath("//span[@id='FBaseinfoName']/text()")[0]
-            except:
-                p_info["company_name"] = None
-            try:
-                p_info["title"] = response.xpath("//span[@id='FJSZC']/text()")[0]
-            except:
-                p_info["title"] = None
-            try:
-                p_info["duty"] = response.xpath("//span[@id='FZW']/text()")[0]
-            except:
-                p_info["duty"] = None
-            try:
-                p_info["admissionticket_num"] = response.xpath("//span[@id='FZKZH']/text()")[0]
-            except:
-                p_info["admissionticket_num"] = None
-            try:
-                p_info["aptitude_accept_date"] = response.xpath("//span[@id='FFZRQ']/text()")[0]
-            except:
-                p_info["aptitude_accept_date"] = None
-            try:
-                p_info["aptitude_useful_date"] = response.xpath("//span[@id='FYXQA']/text()")[0]
-            except:
-                p_info["aptitude_useful_date"] = None
-            try:
-                p_info["credential_num"] = response.xpath("//span[@id='FZSBH']/text()")[0]
-            except:
-                p_info["credential_num"] = None
+            p_info["name"] = response.xpath("//span[@id='FName']/text()").extract_first()
+            p_info["sex"] = response.xpath("//span[@id='FSex']/text()").extract_first()
+            p_info["company_name"] = response.xpath("//span[@id='FBaseinfoName']/text()").extract_first()
+            p_info["title"] = response.xpath("//span[@id='FJSZC']/text()").extract_first()
+            p_info["duty"] = response.xpath("//span[@id='FZW']/text()").extract_first()
+            p_info["admissionticket_num"] = response.xpath("//span[@id='FZKZH']/text()").extract_first()
+            p_info["aptitude_accept_date"] = response.xpath("//span[@id='FFZRQ']/text()").extract_first()
+            p_info["aptitude_useful_date"] = response.xpath("//span[@id='FYXQA']/text()").extract_first()
+            p_info["credential_num"] = response.xpath("//span[@id='FZSBH']/text()").extract_first()
             p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             p_info["is_delete"] = 0
-            p_info["mark"] = data.get("mark")
+            p_info["mark"] =response.meta.get("mark")
             yield p_info
     # 项目安全负责人
     def parse_xmaqfzr(self,response):
