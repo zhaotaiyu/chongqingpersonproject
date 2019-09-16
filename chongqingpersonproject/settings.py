@@ -89,7 +89,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-LOG_LEVEL= 'DEBUG'
+LOG_LEVEL= 'ERROR'
 #PGSQL
 PGSQL_URI="ecs-a025-0002"
 PGSQL_DATABASE="chongqing"

@@ -41,4 +41,5 @@ class PersonInformationItem(scrapy.Item):
 	handle_type = scrapy.Field()
 	department = scrapy.Field()
 	status = scrapy.Field()
+	url  = scrapy.Field()
 

@@ -16,16 +16,11 @@ mongotable = MONGOTABLE
 class ChongqingpersonprojectPipeline(object):
 	def process_item(self, item, spider):
 		for key, value in item.items():
-			if value is None or value == "\xa0" or value == "\\":
-				item[key] = "None"
+			if value in (None,"\xa0","\\"):
+				value = "None"
 			if item.get("mark") == "zljcry":
 				try:
 					item[key] = value.replace("/","").replace(".","")
-				except:
-					pass
-			else:
-				try:
-					item[key] = value.replace("/","-")
 				except:
 					pass
 		return item
