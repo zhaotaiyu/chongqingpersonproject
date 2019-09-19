@@ -89,7 +89,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-LOG_LEVEL= 'ERROR'
+LOG_LEVEL= 'DEBUG'
 #PGSQL
 PGSQL_URI="ecs-a025-0002"
 PGSQL_DATABASE="chongqing"
@@ -101,5 +101,8 @@ PGSQL_PORT=54321
 MONGOCLIENT='mongodb://ecs-a025-0002:27017/'
 MONGODATABASE='chongqing'
 MONGOTABLE='chongqingperson'
-#DRIVERPATH='/root/chromedriver/chromedriver'
-DRIVERPATH = r'F:\healdless\chromedriver_win32\chromedriver.exe'
+
+DOWNLOAD_TIMEOUT=100
+RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 403, 408, 429, 407]
+HTTPERROR_ALLOWED_CODES = [302,301,503,400]
+RETRY_TIMES = 10
