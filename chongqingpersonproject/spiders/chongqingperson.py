@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import pymongo
+
 from scrapy import Request, FormRequest
 import datetime
 from chongqingpersonproject.items import *
+from ..settings import *
 
 class ChongqingpersonSpider(scrapy.Spider):
     name = 'chongqingperson'
@@ -83,19 +86,22 @@ class ChongqingpersonSpider(scrapy.Spider):
                 total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
                 now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
                 tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    p_info = PersonInformationItem()
-                    p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
-                    p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                    p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
-                    p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["is_delete"] = 0
-                    p_info["mark"] = "cqsjly"
-                    p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
-                    p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
-                    p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
-                    yield p_info
+                if tr_list:
+                    for tr in tr_list[1:]:
+                        p_info = PersonInformationItem()
+                        p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                        p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
+                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["is_delete"] = 0
+                        p_info["mark"] = "cqsjly"
+                        p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                        p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
+                        p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
+                        yield p_info
+                else:
+                    self.write_error(response)
             # 重庆市监理工程师
             if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jlgcs/jlgcs_List.aspx":
                 __EVENTTARGET = 'TurnPage1:LB_Next'
@@ -103,19 +109,22 @@ class ChongqingpersonSpider(scrapy.Spider):
                 total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
                 now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
                 tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    p_info = PersonInformationItem()
-                    p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
-                    p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                    p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
-                    p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["is_delete"] = 0
-                    p_info["mark"] = "cqsjlgcs"
-                    p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
-                    p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
-                    p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
-                    yield p_info
+                if tr_list:
+                    for tr in tr_list[1:]:
+                        p_info = PersonInformationItem()
+                        p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                        p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
+                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["is_delete"] = 0
+                        p_info["mark"] = "cqsjlgcs"
+                        p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                        p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
+                        p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
+                        yield p_info
+                else:
+                    self.write_error(response)
             # 注册监理工程师
             if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/qgzcjlgcs/qgzcjlgcs_List.aspx":
                 __EVENTTARGET = 'TurnPage1:LB_Next'
@@ -123,17 +132,20 @@ class ChongqingpersonSpider(scrapy.Spider):
                 total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
                 now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
                 tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    p_info = PersonInformationItem()
-                    p_info["name"] = tr.xpath("./td[2]/font/a/font/text()").extract_first()
-                    p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                    p_info["company_name"] = tr.xpath("./td[5]/font/text()").extract_first()
-                    p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
-                    p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["is_delete"] = 0
-                    p_info["mark"] = "zcjlgcs"
-                    yield p_info
+                if tr_list:
+                    for tr in tr_list[1:]:
+                        p_info = PersonInformationItem()
+                        p_info["name"] = tr.xpath("./td[2]/font/a/font/text()").extract_first()
+                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                        p_info["company_name"] = tr.xpath("./td[5]/font/text()").extract_first()
+                        p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["is_delete"] = 0
+                        p_info["mark"] = "zcjlgcs"
+                        yield p_info
+                else:
+                    self.write_error(response)
             # 专职安全人员
             if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zzaqry/zzaqry_List.aspx":
                 __EVENTTARGET = 'TurnPage1:LB_Next'
@@ -195,21 +207,24 @@ class ChongqingpersonSpider(scrapy.Spider):
                 total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
                 now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
                 tr_list = response.xpath("//table[@id='DataGrid1']/tbody/tr")
-                for tr in tr_list[1:]:
-                    p_info = PersonInformationItem()
-                    p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
-                    p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                    p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    p_info["is_delete"] = 0
-                    p_info["mark"] = "tzzyry"
-                    p_info["credential_num"] = tr.xpath("./td[9]/font/text()").extract_first()
-                    p_info["aptitude_accept_date"] = tr.xpath("./td[7]/font/text()").extract_first()
-                    p_info["aptitude_useful_date"] = tr.xpath("./td[8]/font/text()").extract_first()
-                    p_info["handle_type"] = tr.xpath("./td[5]/font/text()").extract_first()
-                    p_info["department"] = tr.xpath("./td[6]/font/text()").extract_first()
-                    p_info["birthday"] = tr.xpath("./td[4]/font/text()").extract_first()
-                    yield p_info
+                if tr_list:
+                    for tr in tr_list[1:]:
+                        p_info = PersonInformationItem()
+                        p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        p_info["is_delete"] = 0
+                        p_info["mark"] = "tzzyry"
+                        p_info["credential_num"] = tr.xpath("./td[9]/font/text()").extract_first()
+                        p_info["aptitude_accept_date"] = tr.xpath("./td[7]/font/text()").extract_first()
+                        p_info["aptitude_useful_date"] = tr.xpath("./td[8]/font/text()").extract_first()
+                        p_info["handle_type"] = tr.xpath("./td[5]/font/text()").extract_first()
+                        p_info["department"] = tr.xpath("./td[6]/font/text()").extract_first()
+                        p_info["birthday"] = tr.xpath("./td[4]/font/text()").extract_first()
+                        yield p_info
+                else:
+                    self.write_error(response)
             # 招标代理专职人员
             if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zbdlcyry/zbdlcyry_List.aspx":
                 __EVENTTARGET = 'TurnPage1:LB_Next'
@@ -442,3 +457,10 @@ class ChongqingpersonSpider(scrapy.Spider):
         p_info["url"] = response.url
         p_info["person_type"] = "招标代理专职人员"
         yield p_info
+    def write_error(self,response):
+        myclient = pymongo.MongoClient('mongodb://ecs-a025-0002:27017/')
+        mydb = myclient[MONGODATABASE]
+        mycol = mydb[MONGOTABLE]
+        mydict = {"url": response.url, "reason": "该页未返回数据", 'text': response.text,'spider':'chongqingperson','time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        mycol.insert_one(mydict)
+        myclient.close()
