@@ -49,203 +49,206 @@ class ChongqingpersonSpider(scrapy.Spider):
             }
             yield FormRequest(response.url,formdata=formdata,callback=self.parse_yijijzs)
         else:
-            total_page = response.xpath("//span[@id='Pager1_Pages']/text()").extract_first()
-            now_page = response.xpath("//span[@id='Pager1_CPage']/text()").extract_first()
-            #注册造价师
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zczjs/zczjs_List.aspx":
-                mark = "zczjs"
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
-                    formdata = {
-                        '__EVENTTARGET': href,
-                        '__VIEWSTATE': __VIEWSTATE,
-                        'FManageDeptID': '-1',
-                        'FLevel': '0',
-                        'FIsWright': '-1'
-                    }
-                    yield FormRequest(response.url, formdata=formdata, callback=self.parse_zczjs, meta={"mark": mark})
-            # 质量检测人员
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zljcry/zljcry_List.aspx":
-                mark = "zljcry"
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
-                    formdata = {
-                        '__EVENTTARGET': href,
-                        '__VIEWSTATE': __VIEWSTATE,
-                        'FManageDeptID': '-1',
-                        'FLevel': '0',
-                        'FIsWright': '-1'
-                    }
-                    yield FormRequest(response.url, formdata=formdata, callback=self.parse_zljcry, meta={"mark": mark})
-            # 重庆市监理员
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jly/jly_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                if tr_list:
+            try:
+                total_page = response.xpath("//span[@id='Pager1_Pages']/text()").extract_first()
+                now_page = response.xpath("//span[@id='Pager1_CPage']/text()").extract_first()
+                #注册造价师
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zczjs/zczjs_List.aspx":
+                    mark = "zczjs"
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
                     for tr in tr_list[1:]:
-                        p_info = PersonInformationItem()
-                        p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
-                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                        p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
-                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["is_delete"] = 0
-                        p_info["mark"] = "cqsjly"
-                        p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
-                        p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
-                        p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
-                        yield p_info
-                else:
-                    self.write_error(response)
-            # 重庆市监理工程师
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jlgcs/jlgcs_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                if tr_list:
+                        href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                        formdata = {
+                            '__EVENTTARGET': href,
+                            '__VIEWSTATE': __VIEWSTATE,
+                            'FManageDeptID': '-1',
+                            'FLevel': '0',
+                            'FIsWright': '-1'
+                        }
+                        yield FormRequest(response.url, formdata=formdata, callback=self.parse_zczjs, meta={"mark": mark})
+                # 质量检测人员
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zljcry/zljcry_List.aspx":
+                    mark = "zljcry"
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
                     for tr in tr_list[1:]:
-                        p_info = PersonInformationItem()
-                        p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
-                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                        p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
-                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["is_delete"] = 0
-                        p_info["mark"] = "cqsjlgcs"
-                        p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
-                        p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
-                        p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
-                        yield p_info
-                else:
-                    self.write_error(response)
-            # 注册监理工程师
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/qgzcjlgcs/qgzcjlgcs_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                if tr_list:
+                        href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                        formdata = {
+                            '__EVENTTARGET': href,
+                            '__VIEWSTATE': __VIEWSTATE,
+                            'FManageDeptID': '-1',
+                            'FLevel': '0',
+                            'FIsWright': '-1'
+                        }
+                        yield FormRequest(response.url, formdata=formdata, callback=self.parse_zljcry, meta={"mark": mark})
+                # 重庆市监理员
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jly/jly_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+                    if tr_list:
+                        for tr in tr_list[1:]:
+                            p_info = PersonInformationItem()
+                            p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                            p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                            p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
+                            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["is_delete"] = 0
+                            p_info["mark"] = "cqsjly"
+                            p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                            p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
+                            p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
+                            yield p_info
+                    else:
+                        self.write_error(response)
+                # 重庆市监理工程师
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/jlgcs/jlgcs_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+                    if tr_list:
+                        for tr in tr_list[1:]:
+                            p_info = PersonInformationItem()
+                            p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                            p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                            p_info["company_name"] = tr.xpath("./td[7]/font/text()").extract_first()
+                            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["is_delete"] = 0
+                            p_info["mark"] = "cqsjlgcs"
+                            p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                            p_info["major"] = tr.xpath("./td[5]/font/text()").extract_first()
+                            p_info["major2"] = tr.xpath("./td[6]/font/text()").extract_first()
+                            yield p_info
+                    else:
+                        self.write_error(response)
+                # 注册监理工程师
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/qgzcjlgcs/qgzcjlgcs_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+                    if tr_list:
+                        for tr in tr_list[1:]:
+                            p_info = PersonInformationItem()
+                            p_info["name"] = tr.xpath("./td[2]/font/a/font/text()").extract_first()
+                            p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                            p_info["company_name"] = tr.xpath("./td[5]/font/text()").extract_first()
+                            p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
+                            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["is_delete"] = 0
+                            p_info["mark"] = "zcjlgcs"
+                            yield p_info
+                    else:
+                        self.write_error(response)
+                # 专职安全人员
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zzaqry/zzaqry_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    mark = "zzaqry"
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
                     for tr in tr_list[1:]:
-                        p_info = PersonInformationItem()
-                        p_info["name"] = tr.xpath("./td[2]/font/a/font/text()").extract_first()
-                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                        p_info["company_name"] = tr.xpath("./td[5]/font/text()").extract_first()
-                        p_info["credential_num"] = tr.xpath("./td[4]/font/text()").extract_first()
-                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["is_delete"] = 0
-                        p_info["mark"] = "zcjlgcs"
-                        yield p_info
-                else:
-                    self.write_error(response)
-            # 专职安全人员
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zzaqry/zzaqry_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                mark = "zzaqry"
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
-                    formdata = {
-                        '__EVENTTARGET': href,
-                        '__VIEWSTATE': __VIEWSTATE,
-                        'FManageDeptID': '-1',
-                        'FLevel': '0',
-                        'FIsWright': '-1'
-                    }
-                    yield FormRequest(response.url, formdata=formdata, callback=self.parse_zzaqry, meta={"mark": mark})
-            # 项目安全负责人
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/xmaqfzr/xmaqfzr_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                mark = "xmaqfzr"
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
-                    formdata = {
-                        '__EVENTTARGET': href,
-                        '__VIEWSTATE': __VIEWSTATE,
-                        'FManageDeptID': '-1',
-                        'FLevel': '0',
-                        'FIsWright': '-1'
-                    }
-                    yield FormRequest(response.url, formdata=formdata, callback=self.parse_xmaqfzr, meta={"mark": mark})
-            # 企业安全负责人
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/qyaqfzr/qyaqfzr_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                mark = "qyaqfzr"
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
-                    formdata = {
-                        '__EVENTTARGET': href,
-                        '__VIEWSTATE': __VIEWSTATE,
-                        'FManageDeptID': '-1',
-                        'FLevel': '0',
-                        'FIsWright': '-1'
-                    }
-                    yield FormRequest(response.url, formdata=formdata, callback=self.parse_qyaqfzr, meta={"mark": mark})
-            # 特种作业人员
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/tzry/tzry_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                tr_list = response.xpath("//table[@id='DataGrid1']/tbody/tr")
-                if tr_list:
+                        href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                        formdata = {
+                            '__EVENTTARGET': href,
+                            '__VIEWSTATE': __VIEWSTATE,
+                            'FManageDeptID': '-1',
+                            'FLevel': '0',
+                            'FIsWright': '-1'
+                        }
+                        yield FormRequest(response.url, formdata=formdata, callback=self.parse_zzaqry, meta={"mark": mark})
+                # 项目安全负责人
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/xmaqfzr/xmaqfzr_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    mark = "xmaqfzr"
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
                     for tr in tr_list[1:]:
-                        p_info = PersonInformationItem()
-                        p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
-                        p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
-                        p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        p_info["is_delete"] = 0
-                        p_info["mark"] = "tzzyry"
-                        p_info["credential_num"] = tr.xpath("./td[9]/font/text()").extract_first()
-                        p_info["aptitude_accept_date"] = tr.xpath("./td[7]/font/text()").extract_first()
-                        p_info["aptitude_useful_date"] = tr.xpath("./td[8]/font/text()").extract_first()
-                        p_info["handle_type"] = tr.xpath("./td[5]/font/text()").extract_first()
-                        p_info["department"] = tr.xpath("./td[6]/font/text()").extract_first()
-                        p_info["birthday"] = tr.xpath("./td[4]/font/text()").extract_first()
-                        yield p_info
-                else:
-                    self.write_error(response)
-            # 招标代理专职人员
-            if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zbdlcyry/zbdlcyry_List.aspx":
-                __EVENTTARGET = 'TurnPage1:LB_Next'
-                __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
-                total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
-                now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
-                mark = "zbdlzzry"
-                tr_list = response.xpath("//table[@id='DataGrid1']/tr")
-                for tr in tr_list[1:]:
-                    href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
-                    formdata = {
-                        '__EVENTTARGET': href,
-                        '__VIEWSTATE': __VIEWSTATE,
-                        'FManageDeptID': '-1',
-                        'FLevel': '0',
-                        'FIsWright': '-1'
-                    }
-                    yield FormRequest(response.url, formdata=formdata, callback=self.parse_middle, meta={"mark": mark})
+                        href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                        formdata = {
+                            '__EVENTTARGET': href,
+                            '__VIEWSTATE': __VIEWSTATE,
+                            'FManageDeptID': '-1',
+                            'FLevel': '0',
+                            'FIsWright': '-1'
+                        }
+                        yield FormRequest(response.url, formdata=formdata, callback=self.parse_xmaqfzr, meta={"mark": mark})
+                # 企业安全负责人
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/qyaqfzr/qyaqfzr_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    mark = "qyaqfzr"
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+                    for tr in tr_list[1:]:
+                        href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                        formdata = {
+                            '__EVENTTARGET': href,
+                            '__VIEWSTATE': __VIEWSTATE,
+                            'FManageDeptID': '-1',
+                            'FLevel': '0',
+                            'FIsWright': '-1'
+                        }
+                        yield FormRequest(response.url, formdata=formdata, callback=self.parse_qyaqfzr, meta={"mark": mark})
+                # 特种作业人员
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/tzry/tzry_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tbody/tr")
+                    if tr_list:
+                        for tr in tr_list[1:]:
+                            p_info = PersonInformationItem()
+                            p_info["name"] = tr.xpath("./td[2]/font/text()").extract_first()
+                            p_info["sex"] = tr.xpath("./td[3]/font/text()").extract_first()
+                            p_info["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            p_info["is_delete"] = 0
+                            p_info["mark"] = "tzzyry"
+                            p_info["credential_num"] = tr.xpath("./td[9]/font/text()").extract_first()
+                            p_info["aptitude_accept_date"] = tr.xpath("./td[7]/font/text()").extract_first()
+                            p_info["aptitude_useful_date"] = tr.xpath("./td[8]/font/text()").extract_first()
+                            p_info["handle_type"] = tr.xpath("./td[5]/font/text()").extract_first()
+                            p_info["department"] = tr.xpath("./td[6]/font/text()").extract_first()
+                            p_info["birthday"] = tr.xpath("./td[4]/font/text()").extract_first()
+                            yield p_info
+                    else:
+                        self.write_error(response)
+                # 招标代理专职人员
+                if response.url == "http://183.66.171.75:88/CQCollect/Ry_Query/zbdlcyry/zbdlcyry_List.aspx":
+                    __EVENTTARGET = 'TurnPage1:LB_Next'
+                    __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
+                    total_page = response.xpath("//span[@id='TurnPage1_pagecount']/text()").extract_first()
+                    now_page = response.xpath("//span[@id='TurnPage1_currentpage']/text()").extract_first()
+                    mark = "zbdlzzry"
+                    tr_list = response.xpath("//table[@id='DataGrid1']/tr")
+                    for tr in tr_list[1:]:
+                        href = tr.xpath("./td[2]/font/a/@href").extract_first().strip().split("'")[1].replace("$", ":")
+                        formdata = {
+                            '__EVENTTARGET': href,
+                            '__VIEWSTATE': __VIEWSTATE,
+                            'FManageDeptID': '-1',
+                            'FLevel': '0',
+                            'FIsWright': '-1'
+                        }
+                        yield FormRequest(response.url, formdata=formdata, callback=self.parse_middle, meta={"mark": mark})
 
-            request = self.next_page(response,now_page,total_page,__VIEWSTATE,__EVENTTARGET)
-            yield request
+                request = self.next_page(response,now_page,total_page,__VIEWSTATE,__EVENTTARGET)
+                yield request
+            except:
+                yield Request(response.url,callback=self.parse)
     # 一级建造师
     def parse_yijijzs(self,response):
         __VIEWSTATE = response.xpath("//input[@name='__VIEWSTATE']/@value").extract_first()
