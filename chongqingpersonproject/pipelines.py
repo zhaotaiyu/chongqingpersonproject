@@ -23,6 +23,11 @@ class ChongqingpersonprojectPipeline(object):
 					item[key] = value.replace("/","").replace(".","")
 				except:
 					pass
+		item["create_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		item["modification_time"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		item["is_delete"] = 0
+		item["source"] = "重庆"
+		item["status"] = 1
 		return item
 	#质量检测人员 / 变为空
 
@@ -53,7 +58,7 @@ class PgsqlPipeline(object):
 		self.db.close()
 	def process_item(self,item,spider):
 		ite=dict(item)
-		sql="INSERT INTO {} (".format(item.collection)
+		sql="INSERT INTO chongqing.{} (".format(item.collection)
 		v_list=[]
 		k_list=[]
 		for key,value in ite.items():
