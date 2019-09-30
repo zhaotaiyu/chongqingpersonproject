@@ -66,7 +66,8 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'chongqingpersonproject.pipelines.ChongqingpersonprojectPipeline': 300,
-   'chongqingpersonproject.pipelines.PgsqlPipeline': 301,
+   #'chongqingpersonproject.pipelines.PgsqlPipeline': 301,
+   'chongqingpersonproject.pipelines.ScrapyKafkaPipeline': 302,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -99,10 +100,14 @@ PGSQL_PORT=54321
 
 #MONGO配置
 MONGOCLIENT='mongodb://ecs-a025-0002:27017/'
-MONGODATABASE='chongqing'
+MONGODATABASE='error'
 MONGOTABLE='chongqingperson'
 
 DOWNLOAD_TIMEOUT=100
 RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 408, 429, 407]
 HTTPERROR_ALLOWED_CODES = [302,301,503,400,500,502,504,408,429,407]
 RETRY_TIMES = 10
+
+#KAFKA配置
+BOOTSTRAP_SERVER="49.4.90.247:6667"
+TOPIC="TOPIC_sikuyifinally"
